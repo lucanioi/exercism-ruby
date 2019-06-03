@@ -1,0 +1,1 @@
+InvalidCodonError = Class.new(StandardError)

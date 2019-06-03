@@ -1,0 +1,78 @@
+# todo: use recursion
+
+# frozen_string_literal: true
+
+class Say
+  LIMIT = 999_999_999_999
+
+  SMALL_NUMBERS = %w[
+    zero one two three four five
+    six seven eight nine ten eleven
+    twelve thirteen fourteen fifteen
+    sixteen seventeen eighteen nineteen
+  ]
+  TENS = %w[
+    zero ten twenty thirty forty
+    fifty sixty seventy eighty ninety
+  ]
+
+  SHORT_SCALES = {
+    1_000_000_000 => 'billion',
+    1_000_000 => 'million',
+    1_000 => 'thousand',
+    1 => ''
+  }.freeze
+
+  def initialize(number)
+    validate!(number)
+    @number = number
+  end
+
+  def in_english
+    return SMALL_NUMBERS[number] if number.zero?
+    SHORT_SCALES
+      .select { |scale, _| number / scale > 0 }
+      .map(&method(:translate_scale))
+      .compact
+      .join("\s")
+  end
+
+  private
+
+  attr_reader :number
+
+  def translate_scale((scale, english))
+    partial_number = (number / scale) % 1_000
+    return unless partial_number > 0
+    [triple_digit(partial_number), english].reject(&:empty?).join("\s")
+  end
+
+  def triple_digit(number)
+    [hundreds(number), tens_and_ones(number % 100)].compact.join("\s")
+  end
+
+  def hundreds(number)
+    if number / 100 > 0
+      "#{SMALL_NUMBERS[(number / 100)]} hundred"
+    end
+  end
+
+  def tens_and_ones(number)
+    case number
+    when 0 then nil
+    when (1..19) then SMALL_NUMBERS[number]
+    else
+      [TENS[number / 10], ones(number % 10)].compact.join('-')
+    end
+  end
+
+  def ones(number)
+    SMALL_NUMBERS[number] if number > 0
+  end
+
+  def validate!(number)
+    unless (0..LIMIT).include? number
+      raise ArgumentError, 'Number must be between 0 and 1 trillion (exclusive).'
+    end
+  end
+end
