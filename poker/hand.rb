@@ -29,6 +29,10 @@ class Hand
     cards.map(&:suit)
   end
 
+  def highest_value
+    values.max
+  end
+
   private
 
   def create_cards(str_array)

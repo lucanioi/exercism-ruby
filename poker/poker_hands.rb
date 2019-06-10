@@ -3,7 +3,7 @@ require_relative 'card'
 module PokerHands
   extend self
 
-  WEAKEST_TO_STRONGEST = %i(
+  HANDS_IN_ORDER = %i(
     high_cards
     pairs
     three_of_a_kind
@@ -16,7 +16,7 @@ module PokerHands
 
   def calculate_score(hand)
     scores_by_hands =
-      WEAKEST_TO_STRONGEST.reduce([]) do |scores, hand_type|
+      HANDS_IN_ORDER.reduce([]) do |scores, hand_type|
         scores + score(hand, as: hand_type)
       end
 
@@ -30,7 +30,8 @@ module PokerHands
   end
 
   def score(hand, as:)
-    Array calculations[as][:func].call(hand)
+    Array(calculations[as][:func].call(hand) || 0)
+      .map { |score| score ? score : 0 }
   end
 
   def combine_into_single_score(scores)
@@ -49,36 +50,35 @@ module PokerHands
 
   hand :pairs do |hand|
     pair_1, pair_2 = find_duplicates(hand, 2)
-    [(pair_1 || 0), (pair_2 || 0)]
+    [pair_1, pair_2]
   end
 
   hand :three_of_a_kind do |hand|
-    find_duplicates(hand, 3).first || 0
+    find_duplicates(hand, 3).first
   end
 
   hand :straight do |hand|
     values = values_for_straight(hand)
-    values == (values.min..values.max).to_a ? values.max : 0
+    values.max if sequence?(values)
   end
 
   hand :flush do |hand|
-    hand.suits.uniq.one? ? hand.values.max : 0
+    hand.highest_value if single_suite?(hand)
   end
 
   hand :full_house do |hand|
-    three_of_a_kind = score(hand, as: :three_of_a_kind).first
-    pair = score(hand, as: :pairs).find { |score| score != three_of_a_kind } || 0
-    return [0, 0] if three_of_a_kind.zero? || pair.zero?
-    [pair, three_of_a_kind]
+    set = score(hand, as: :three_of_a_kind).first
+    pair = score(hand, as: :pairs).first
+    [set, pair].none?(&:zero?) ? [pair, set] : [0, 0]
   end
 
   hand :four_of_a_kind do |hand|
-    find_duplicates(hand, 4).first || 0
+    find_duplicates(hand, 4).first
   end
 
   hand :straight_flush do |hand|
-    return 0 if score(hand, as: :straight).first.zero?
-    score(hand, as: :flush)
+    score(hand, as: :straight).first.nonzero? &&
+      score(hand, as: :flush)
   end
 
   def values_for_straight(hand)
@@ -98,5 +98,13 @@ module PokerHands
 
   def to_ace_low(hand)
     [Card::LOW_ACE_VALUE] + hand.values.min(4)
+  end
+
+  def sequence?(values)
+    values.sort == (values.min..values.max).to_a
+  end
+
+  def single_suite?(hand)
+    hand.suits.uniq.one?
   end
 end

@@ -1,5 +1,6 @@
 require 'minitest/autorun'
 require_relative 'poker'
+require 'pry-byebug'
 
 class PokerTest < Minitest::Test
   def test_one_hand
