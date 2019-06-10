@@ -25,6 +25,10 @@ class Hand
     cards.map(&:value)
   end
 
+  def ranks
+    cards.map(&:rank)
+  end
+
   def suits
     cards.map(&:suit)
   end

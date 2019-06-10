@@ -3,6 +3,7 @@ require_relative 'card'
 module PokerHands
   extend self
 
+  SCORE_BASE = 14
   HANDS_IN_ORDER = %i(
     high_cards
     pairs
@@ -36,7 +37,7 @@ module PokerHands
 
   def combine_into_single_score(scores)
     scores.each_with_index.sum do |score, i|
-      score * (Card::HIGHEST_VALUE + 1)**i
+      score * SCORE_BASE**i
     end
   end
 
@@ -93,8 +94,7 @@ module PokerHands
   end
 
   def ace_low?(hand)
-    [Card::LOWEST_VALUE, Card::HIGHEST_VALUE]
-      .all? { |val| hand.values.include?(val) }
+    ['2', 'A'].all? { |rank| hand.ranks.include?(rank) }
   end
 
   def to_ace_low(hand)

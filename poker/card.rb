@@ -4,11 +4,9 @@ class Card
 
   InvalidCard = Class.new(StandardError)
 
-  LOWEST_VALUE = 1
-  HIGHEST_VALUE = 13
-  LOW_ACE_VALUE = 0
   RANKS = %w(2 3 4 5 6 7 8 9 10 J Q K A).freeze
   SUITS = %w(Spades Hearts Clubs Diamonds).map(&:chr).freeze
+  LOW_ACE_VALUE = 0
 
   attr_reader :rank, :suit
 
