@@ -1,5 +1,5 @@
 module Luhn
-  extend self
+  module_function
 
   def valid?(input)
     Validator.new(input).valid?
@@ -7,7 +7,7 @@ module Luhn
 
   class Validator
     MINIMUM_LENGTH = 2
-    VALID_CHARS = /\A\d+\z/
+    VALID_LUHN = /\A\d+\z/
 
     def initialize(input)
       @input = input.to_s.gsub(/\s/, '')
@@ -26,7 +26,7 @@ module Luhn
     end
 
     def valid_chars?
-      !!(input =~ VALID_CHARS)
+      input.match?(VALID_LUHN)
     end
 
     def valid_luhn?
@@ -40,8 +40,4 @@ module Luhn
       doubled > 9 ? doubled - 9 : doubled
     end
   end
-end
-
-module BookKeeping
-  VERSION = 1
 end

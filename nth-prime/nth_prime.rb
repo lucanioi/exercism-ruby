@@ -1,35 +1,22 @@
 class Prime
-  def self.nth(num)
-    new(num).compute
-  end
+  include Enumerable
 
-  def initialize(num)
-    raise ArgumentError, 'n must be greater than 0' if num <= 0
-
-    @primes = [2]
-    @num    = num
-  end
-
-  def compute
-    current_num = primes.last + 1
-
-    until primes.size == num
-      if primes.none? { |prime| (current_num % prime).zero? }
-        primes << current_num
-        current_num = primes.last + 1
-      else
-        current_num += 1
-      end
+  class << self
+    def nth(n)
+      raise ArgumentError, 'n must be greater than 0' if n <= 0
+      new.take(n).last
     end
+  end
 
-    primes.last
+  def each(&block)
+    (2..).each { |n| yield(n) if prime?(n) }
   end
 
   private
 
-  attr_reader :num, :primes
-end
-
-module BookKeeping
-  VERSION = 1
+  def prime?(i)
+    (2..Math.sqrt(i).to_i).none? do |divisor|
+      i % divisor == 0
+    end
+  end
 end

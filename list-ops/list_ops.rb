@@ -1,5 +1,5 @@
 module ListOps
-  extend self
+  module_function
 
   def arrays(array)
     counter = 0
@@ -13,7 +13,6 @@ module ListOps
 
   def reverser(array)
     reversed_array = []
-
     current_i = 0
     last_i = arrays(array) - 1
 
@@ -27,7 +26,6 @@ module ListOps
 
   def concatter(arr_1, arr_2)
     concat_array = arr_1.dup
-
     current_i = arrays(arr_1)
 
     for element in arr_2 do
@@ -40,7 +38,6 @@ module ListOps
 
   def mapper(array)
     mapped_array = []
-
     current_i = 0
 
     for element in array do
@@ -53,7 +50,6 @@ module ListOps
 
   def filterer(array)
     filtered_array = []
-
     current_i = 0
 
     for element in array do
@@ -85,8 +81,4 @@ module ListOps
 
     product
   end
-end
-
-module BookKeeping
-  VERSION = 2
 end
