@@ -15,9 +15,10 @@ module PokerHands
   ).freeze
 
   def calculate_score(hand)
-    scores_by_hands = WEAKEST_TO_STRONGEST.reduce([]) do |scores, hand_type|
-      scores + score(hand, as: hand_type)
-    end
+    scores_by_hands =
+      WEAKEST_TO_STRONGEST.reduce([]) do |scores, hand_type|
+        scores + score(hand, as: hand_type)
+      end
 
     combine_into_single_score(scores_by_hands)
   end
@@ -56,7 +57,7 @@ module PokerHands
   end
 
   hand :straight do |hand|
-    values = ace_low_for_straight?(hand) ? to_ace_low(hand) : hand.values.sort
+    values = values_for_straight(hand)
     values == (values.min..values.max).to_a ? values.max : 0
   end
 
@@ -80,15 +81,22 @@ module PokerHands
     score(hand, as: :flush)
   end
 
-  def find_duplicates(hand, count)
-    hand.values.uniq.sort.select { |v| hand.values.count(v) == count }
+  def values_for_straight(hand)
+    ace_low?(hand) ? to_ace_low(hand) : hand.values.sort
   end
 
-  def ace_low_for_straight?(hand)
-    hand.values.min == Card::LOWEST_VALUE && hand.values.max == Card::HIGHEST_VALUE
+  def find_duplicates(hand, count)
+    hand.values.uniq.sort.select do |v|
+      hand.values.count(v) == count
+    end
+  end
+
+  def ace_low?(hand)
+    [Card::LOWEST_VALUE, Card::HIGHEST_VALUE]
+      .all? { |val| hand.values.include?(val) }
   end
 
   def to_ace_low(hand)
-    [Card::LOW_ACE_VALUE] + hand.values.sort.take(4)
+    [Card::LOW_ACE_VALUE] + hand.values.min(4)
   end
 end

@@ -1,15 +1,18 @@
+require_relative 'file'
+require_relative 'pattern'
+require_relative 'option'
+
 module Grep
   class Grep
-    def initialize(pattern, flags, files)
-      @pattern = pattern
-      @flags = flags
-      @files = files
+    def initialize(pattern, flags, file_names)
+      @flags = flags.freeze
+      @pattern = Pattern.with_flags(pattern, flags)
+      @files = create_files(file_names, flags)
     end
 
     def grep
       files
-        .flat_map { |file| File.read(file).lines.map(&:chomp) }
-        .select { |line| line.match?(/#{pattern}/) }
+        .map { |f| f.grep(pattern) }
         .join("\n")
     end
 
@@ -17,8 +20,8 @@ module Grep
 
     attr_reader :pattern, :flags, :files
 
-    def method_name
-
+    def create_files(file_names, flags)
+      file_names.map { |name| File.new(name, flags) }
     end
   end
 end
