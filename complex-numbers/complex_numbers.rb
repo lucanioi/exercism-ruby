@@ -76,7 +76,3 @@ class ComplexNumber
     self.class.new(proxy.real, proxy.imag)
   end
 end
-
-module BookKeeping
-  VERSION = 1
-end
