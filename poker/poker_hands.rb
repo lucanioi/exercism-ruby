@@ -77,8 +77,9 @@ module PokerHands
   end
 
   hand :straight_flush do |hand|
-    score(hand, as: :straight).first.nonzero? &&
+    if score(hand, as: :straight).first.nonzero?
       score(hand, as: :flush)
+    end
   end
 
   def values_for_straight(hand)
