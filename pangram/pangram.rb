@@ -1,13 +1,9 @@
 module Pangram
-  extend self
-
   LETTERS = ('a'..'z').to_a.freeze
 
-  def pangram?(phrase, letters = LETTERS)
-    letters.all? { |letter| phrase.include? letter }
-  end
-end
+  module_function
 
-module BookKeeping
-  VERSION = 6
+  def pangram?(phrase)
+    (phrase.downcase.chars & LETTERS).size == LETTERS.size
+  end
 end

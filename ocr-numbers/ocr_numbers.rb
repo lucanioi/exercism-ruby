@@ -24,51 +24,25 @@ class OcrNumbers
   end
 
   def initialize(string)
+    validate!(string)
     @string = string
+    @ocrs = parse(string)
   end
 
   def convert
-    validate
-    parse_input
-    convert_to_chars
+    ocrs.map do |line|
+      line.map(&method(:identify)).join
+    end.join(',')
   end
 
   private
 
   attr_reader :string, :ocrs
 
-  def validate
-    unless valid_height? && valid_width?
-      raise ArgumentError, 'Malformed OCR string'
-    end
-  end
-
-  def parse_input
-    @ocrs = string.split("\n").each_slice(4).map do |lines|
-      reconstruct_ocr(lines)
-    end
-  end
-
-  def convert_to_chars
-    return if ocrs.empty?
-
-    ocrs.map do |line|
-      line.map { |ocr| identify(ocr) }.join
-    end.join(',')
-  end
-
-  def valid_height?
-    string.split("\n").size.modulo(OCR_HEIGHT).zero?
-  end
-
-  def valid_width?
-    string.split("\n").all? { |col| col.size.modulo(OCR_WIDTH).zero? }
-  end
-
   def reconstruct_ocr(lines)
-    ocrs_hash = Hash.new { |h, k| h[k] = [] }
+    ocrs = Hash.new { |h, k| h[k] = [] }
 
-    lines.each_with_object(ocrs_hash) do |line, ocrs|
+    lines.each_with_object(ocrs) do |line, ocrs|
       line.scan(/.{#{OCR_WIDTH}}/).each_with_index do |segment, i|
         ocrs[i] << segment
       end
@@ -78,8 +52,24 @@ class OcrNumbers
   def identify(string)
     OCR.fetch(string, '?')
   end
-end
 
-module BookKeeping
-  VERSION = 1
+  def validate!(string)
+    unless valid_height?(string) && valid_width?(string)
+      raise ArgumentError, 'Malformed OCR string'
+    end
+  end
+
+  def valid_height?(string)
+    string.split("\n").size.modulo(OCR_HEIGHT).zero?
+  end
+
+  def valid_width?(string)
+    string.split("\n").all? { |col| col.size.modulo(OCR_WIDTH).zero? }
+  end
+
+  def parse(string)
+    string.split("\n").each_slice(4).map do |lines|
+      reconstruct_ocr(lines)
+    end
+  end
 end

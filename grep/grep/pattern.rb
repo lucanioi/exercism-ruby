@@ -1,36 +1,38 @@
 module Grep
   class Pattern
-    # in order of precedence
-    STRATEGIES = {
-      '-i'
-      '-v'
-      '-x'
-    }
-
-    class << self
-      def with_flags(pattern, flags)
-
-      end
-    end
-
-    def initialize(pattern)
+    def initialize(pattern, flags)
       @pattern = pattern
+      @flags = flags
     end
 
     def match?(string)
       string.match?(pattern)
+        .then { |matched| invert? ? !matched : matched  }
     end
 
     def pattern
-      case_sensitive? ? /#{@pattern}/ : /#{@pattern}/i
+      option = ignore_case? ? Regexp::IGNORECASE : 0
+      Regexp.new(regexp(@pattern), option)
     end
 
     private
 
     attr_reader :flags
 
-    def case_sensitive?
-      !flags.include?('-i')
+    def regexp(pattern)
+      match_whole_line? ? "^#{pattern}$" : pattern
+    end
+
+    def ignore_case?
+      flags.include?('-i')
+    end
+
+    def invert?
+      flags.include?('-v')
+    end
+
+    def match_whole_line?
+      flags.include?('-x')
     end
   end
 end
