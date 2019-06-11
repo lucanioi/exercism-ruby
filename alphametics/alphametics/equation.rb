@@ -52,10 +52,6 @@ module Alphametics
       left.split(ADDITION).map(&:strip)
     end
 
-    def sum_operands
-      operands.map(&:to_i).sum
-    end
-
     def resolve_left(solution)
       simplified_operands.reduce(0) do |accum, (op, mul)|
         accum + (substitute_term(op, solution) * mul)
