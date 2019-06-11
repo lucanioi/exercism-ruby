@@ -30,7 +30,7 @@ class BookStore
   def discount_sets(basket)
     (1...DISCOUNTS.size).flat_map do |set_size|
       BOOKS.to_a.combination(set_size)
-        .select { |set| (basket & set).size == set.size }
+        .select { |set| subset?(basket, set) }
     end
   end
 
@@ -44,5 +44,9 @@ class BookStore
         basket.delete_at(basket.index(book))
       end
     end
+  end
+
+  def subset?(set, subset)
+    (set & subset).size == subset.size
   end
 end
