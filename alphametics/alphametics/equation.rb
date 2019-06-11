@@ -3,16 +3,17 @@ require_relative 'constraints'
 
 module Alphametics
   class Equation
-    attr_reader :constraint
-
-    EvaluatedEquation = Struct.new(:left_hand_side, :right_hand_side) do
-      def error_margin
-        (left_hand_side - right_hand_side).abs
+    EvaluatedEquation =
+      Struct.new(:left, :right) do
+        def error_margin
+          (left - right).abs
+        end
       end
-    end
 
     EQUALITY = '=='.freeze
     ADDITION = '+'.freeze
+
+    attr_reader :constraint
 
     def initialize(equation)
       @equation = equation.freeze
@@ -29,42 +30,48 @@ module Alphametics
     end
 
     def solve(solution)
-      EvaluatedEquation.new(resolve_left_hand_side(solution), resolve_right_hand_side(solution))
+      EvaluatedEquation.new(
+        resolve_left(solution),
+        resolve_right(solution)
+      )
     end
 
-    def distinct_letters
+    def uniq_letters
       equation.scan(/[[:alpha:]]/).uniq
     end
 
-    def left_hand_side
+    def left
       equation.split(EQUALITY).first.strip
     end
 
-    def right_hand_side
+    def right
       equation.split(EQUALITY).last.strip
     end
 
     def operands
-      left_hand_side.split(ADDITION).map(&:strip)
+      left.split(ADDITION).map(&:strip)
     end
 
     def sum_operands
       operands.map(&:to_i).sum
     end
 
-    def resolve_left_hand_side(solution)
-      simplified_operands.reduce(0) do |result, (operand, multiplier)|
-        result + (substitute_term(operand, solution) * multiplier)
+    def resolve_left(solution)
+      simplified_operands.reduce(0) do |accum, (op, mul)|
+        accum + (substitute_term(op, solution) * mul)
       end
     end
 
-    def resolve_right_hand_side(solution)
-      substitute_term(right_hand_side, solution)
+    def resolve_right(solution)
+      substitute_term(right, solution)
     end
 
     def substitute_term(term, solution)
       term.chars.map do |letter|
-        solution.fetch(letter) { raise Errors::InvalidEquation, "'#{letter}' could not be resolved" }
+        solution.fetch(letter) do
+          msg = "'#{letter}' could not be resolved"
+          raise Errors::InvalidEquation, msg
+        end
       end.join.to_i
     end
 

@@ -6,28 +6,28 @@ module Alphametics
       private
 
       def find_negative_constraints
-        super.then(&method(:add_additive_identity))
+        super.then(&method(:add_additive_id))
       end
 
-      def add_additive_identity(mapping)
+      def add_additive_id(mapping)
         mapping.dup.tap do |mapping|
           (0...min_term_length).each do |position|
-            add_additive_identity_at(position, mapping)
+            add_additive_id_at(position, mapping)
           end
         end
       end
 
-      def add_additive_identity_at(position, mapping)
+      def add_additive_id_at(position, mapping)
         op_1, op_2 = digits_at(position, operands)
         result_digit = digit_at(position, result)
 
         if [op_1, op_2].include?(result_digit)
           letter = op_1 == result_digit ? op_2 : op_1
-          mapping[letter] += additive_identity_constraint(position)
+          mapping[letter] += additive_id_constraint(position)
         end
       end
 
-      def additive_identity_constraint(position)
+      def additive_id_constraint(position)
         position == 0 ? (1..9).to_set : (1..8).to_set
       end
 

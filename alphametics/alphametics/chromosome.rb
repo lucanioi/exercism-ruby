@@ -3,10 +3,10 @@ require_relative 'constraints'
 
 module Alphametics
   class Chromosome
-    attr_reader :genes
-
     FILLER_GENE = '_'.freeze
     DIVERSITY = 10
+
+    attr_reader :genes
 
     class << self
       attr_writer :invalid_solutions, :constraint
@@ -35,7 +35,7 @@ module Alphametics
     def initialize(genes)
       @genes = genes.freeze
       validate_genes!
-      validate_constraint!
+      validate_genetic_mutability!
     end
 
     def to_solution
@@ -69,20 +69,27 @@ module Alphametics
 
     def mutation_indices
       ind_1, ind_2 = generate_random_indices
-      ind_1, ind_2 = generate_random_indices until valid_mutation?(ind_1, ind_2)
+      until valid_swap?(ind_1, ind_2)
+        ind_1, ind_2 = generate_random_indices
+      end
       [ind_1, ind_2]
     end
 
-    def valid_mutation?(ind_1, ind_2)
-      return false if ind_1 == ind_2 || !swap_includes_letters?(ind_1, ind_2)
-      genes.dup
-        .tap { |genes| mutate!(genes, ind_1, ind_2) }
-        .then(&method(:map_genes_to_indices))
-        .then(&method(:satisfy_constraint?))
+    def valid_swap?(ind_1, ind_2)
+      ind_1 != ind_2 &&
+        swap_includes_letters?(ind_1, ind_2) &&
+        valid_mutation?(ind_1, ind_2)
     end
 
     def swap_includes_letters?(ind_1, ind_2)
       [ind_1, ind_2].any? { |i| genes[i] != FILLER_GENE }
+    end
+
+    def valid_mutation?(ind_1, ind_2)
+      genes.dup
+        .tap { |genes| mutate!(genes, ind_1, ind_2) }
+        .then(&method(:map_genes_to_indices))
+        .then(&method(:satisfy_constraint?))
     end
 
     def satisfy_constraint?(solution)
@@ -103,9 +110,15 @@ module Alphametics
       end
     end
 
-    def validate_constraint!
-      unless (0...DIVERSITY).to_a.combination(2).any? { |indices| valid_mutation?(*indices) }
+    def validate_genetic_mutability!
+      unless genetically_mutable?
         raise Errors::ImpossibleConstraints
+      end
+    end
+
+    def genetically_mutable?
+      (0...DIVERSITY).to_a.combination(2).any? do |indices|
+        valid_mutation?(*indices)
       end
     end
   end

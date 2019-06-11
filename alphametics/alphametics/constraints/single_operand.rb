@@ -12,7 +12,9 @@ module Alphametics
       def check_inequality(mapping)
         mapping.dup.tap do |mapping|
           unless equal_terms
-            letters.each { |letter| mapping[letter] += POSSIBLE_VALUES.to_set }
+            letters.each do |letter|
+              mapping[letter] += POSSIBLE_VALUES.to_set
+            end
           end
         end
       end

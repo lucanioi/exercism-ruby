@@ -13,21 +13,25 @@ module Alphametics
     end
 
     def score
-      left_digits.each_index.reduce(0) do |score, i|
-        left_digits[i] == right_digits[i] ? score + 10 : score
-      end
+      left_digits
+        .each_index
+        .count(&method(:same_value?)) * 10
     end
 
     private
 
+    attr_reader :evaluated_equation
+
     def left_digits
-      @left_digits ||= evaluated_equation.left_hand_side.digits
+      @left_digits ||= evaluated_equation.left.digits
     end
 
     def right_digits
-      @right_digits ||= evaluated_equation.right_hand_side.digits
+      @right_digits ||= evaluated_equation.right.digits
     end
 
-    attr_reader :evaluated_equation
+    def same_value?(i)
+      left_digits[i] == right_digits[i]
+    end
   end
 end

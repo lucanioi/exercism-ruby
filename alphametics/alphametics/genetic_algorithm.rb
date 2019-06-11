@@ -14,13 +14,15 @@ module Alphametics
 
     def solve
       config.iterations.times do
-        if chromosome = gene_pool.find { |chrom| error_margin(chrom).zero? }
-          return chromosome.to_solution
+        if perfect_chromosome
+          return perfect_chromosome.to_solution
         end
         repopulate_pool(next_generation)
       end
 
-      raise Errors::TimeOut, "Failed to find a solution within #{config.iterations} iterations."
+      raise Errors::TimeOut, "Failed to find a solution " \
+                             "within #{config.iterations} " \
+                             "iterations."
     end
 
     private
@@ -33,12 +35,20 @@ module Alphametics
       @gene_pool = random_chromosomes(config.pool_size)
     end
 
+    def perfect_chromosome
+      gene_pool.find { |chrom| error_margin(chrom).zero? }
+    end
+
     def next_generation
-      select_fittest(gene_pool) + gene_pool.sample(config.survivor_count) + random_chromosomes(config.random_count)
+      select_fittest(gene_pool) +
+        gene_pool.sample(config.survivor_count) +
+        random_chromosomes(config.random_count)
     end
 
     def random_chromosomes(count)
-      count.times.map { Chromosome.random_chromosome(equation.distinct_letters) }
+      count.times.map do
+        Chromosome.random_chromosome(equation.uniq_letters)
+      end
     end
 
     def select_fittest(pool)
@@ -46,7 +56,9 @@ module Alphametics
     end
 
     def repopulate_pool(selected_gene_pool)
-      @gene_pool = config.pool_size.times.map { selected_gene_pool.sample.mutated_copy }
+      @gene_pool = config.pool_size.times.map do
+        selected_gene_pool.sample.mutated_copy
+      end
     end
 
     def error_margin(chromosome)
@@ -66,7 +78,9 @@ module Alphametics
     end
 
     def average_fitness
-      gene_pool.map(&method(:fitness)).sum / gene_pool.size.to_f
+      gene_pool
+        .map(&method(:fitness))
+        .sum / gene_pool.size.to_f
     end
 
     def validate_equation!

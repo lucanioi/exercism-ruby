@@ -5,8 +5,8 @@ module Alphametics
 
       def initialize(equation)
         @operands = equation.operands
-        @result   = equation.right_hand_side
-        @letters  = equation.distinct_letters
+        @result   = equation.right
+        @letters  = equation.uniq_letters
       end
 
       def negative_constraints
@@ -14,12 +14,13 @@ module Alphametics
       end
 
       def satisfy?(mapping)
-        negative_constraints.none? { |letter, values| values.include? mapping[letter]  }
+        negative_constraints.none? do |letter, values|
+          values.include? mapping[letter]
+        end
       end
 
       def valid?
-        negative_constraints.none? { |_, values| values.size == POSSIBLE_VALUES.count } &&
-          !(operands.size > 1 && operands.include?(result))
+        !impossible_equation? && all_constraints_valid?
       end
 
       private
@@ -49,21 +50,21 @@ module Alphametics
       end
 
       def max_leading_result
-        max_result = substitute_max(operands).map(&:to_i).sum
+        max_result = sub_max(operands).map(&:to_i).sum
         max_leading_digit = max_result / result_power_of_ten
         max_leading_digit < 10 ? max_leading_digit : 9
       end
 
       def min_leading_result
-        min_result = substitute_min(operands).map(&:to_i).sum
+        min_result = sub_min(operands).map(&:to_i).sum
         min_result / result_power_of_ten
       end
 
-      def substitute_max(terms)
+      def sub_max(terms)
         terms.map { |term| '9' * term.size }
       end
 
-      def substitute_min(terms)
+      def sub_min(terms)
         terms.map { |term| '1'.ljust(term.size, '0') }
       end
 
@@ -93,6 +94,16 @@ module Alphametics
 
       def empty_mapping
         Hash.new { |h, k| h[k] = Set.new }
+      end
+
+      def all_constraints_valid?
+        negative_constraints.none? do |_, values|
+          values.size == POSSIBLE_VALUES.count
+        end
+      end
+
+      def impossible_equation?
+        operands.size > 1 && operands.include?(result)
       end
     end
   end

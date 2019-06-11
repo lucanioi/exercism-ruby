@@ -19,14 +19,17 @@ module Alphametics
         return true if letters.size < 10
 
         POSSIBLE_VALUES.none? do |value|
-          all_constrainted_values.count(value) == POSSIBLE_VALUES.count
+          POSSIBLE_VALUES.count ==
+            all_constrainted_values.count(value)
         end
       end
 
       def add_ones_digit_constraints(mapping)
         mapping.dup.tap do |mapping|
           if digits_at(0, all_terms).uniq.one?
-            constraint = POSSIBLE_VALUES.select { |n| (n * operands.count) % 10 == n }
+            constraint = POSSIBLE_VALUES.select do |n|
+              (n * operands.count) % 10 == n
+            end
             mapping[digit_at(0, result)] += constraint
           end
         end
@@ -35,7 +38,8 @@ module Alphametics
       def add_zero_by_exclusion(mapping)
         mapping.dup.tap do |mapping|
           if leading_letters.size == 9
-            mapping[(letters - leading_letters).first] += (1..9).to_set
+            zero_letter = (letters - leading_letters).first
+            mapping[zero_letter] += (1..9).to_set
           end
         end
       end
