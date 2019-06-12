@@ -1,24 +1,4 @@
-class Board
-  def initialize(board)
-    @rows = board.map(&:split)
-  end
-
-  def winner
-    case
-    when connect?('O', rows) then 'O'
-    when connect?('X', rows.transpose) then 'X'
-    else ''
-    end
-  end
-
-  private
-
-  attr_reader :rows, :seen
-
-  def connect?(player, rows)
-    Connect.new(player, rows).connect?
-  end
-end
+require_relative 'board'
 
 class Connect
   Field = Struct.new(:stone, :position)
@@ -88,7 +68,9 @@ class Connect
 
   def create_fields(rows)
     rows.map.with_index do |row, row_i|
-      row.map.with_index { |stone, col_i| Field.new(stone, [row_i, col_i]) }
+      row.map.with_index do |stone, col_i|
+        Field.new(stone, [row_i, col_i])
+      end
     end
   end
 end
