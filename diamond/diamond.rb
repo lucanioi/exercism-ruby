@@ -1,66 +1,30 @@
-class Diamond
-  LETTERS = ('A'..'Z').to_a
+# frozen_string_literal: true
+
+module Diamond
+  A = 'A'.ord
 
   class << self
-    def make_diamond(center_letter)
-      new(center_letter).make
+    def make_diamond(char)
+      create_quadrant(char)
+        .map.with_index(&method(:create_row))
+        .then(&method(:mirror))
+        .join
     end
 
-    private :new
-  end
+    private
 
-  def initialize(center_letter)
-    @center_letter = center_letter
-  end
-
-  def make
-    if single_line?
-      edge + "\n"
-    else
-      edge + "\n" + body + "\n" + edge + "\n"
+    def create_quadrant(char)
+      width = char.ord - A + 1
+      Array.new(width) { "\s" * width }
     end
-  end
 
-  private
+    def create_row(half_row, index)
+      half_row[index] = (A + index).chr
+      mirror(half_row.reverse) + "\n"
+    end
 
-  attr_reader :center_letter
-
-  def single_line?
-    center_letter == LETTERS.first
-  end
-
-  def edge
-    outer_spaces(0) + LETTERS.first + outer_spaces(0)
-  end
-
-  def body
-    body_levels.map do |level|
-      left_half = outer_spaces(level) + letter_at(level)
-      left_half + inner_spaces(level) + left_half.reverse
-    end.join("\n")
-  end
-
-  def body_levels
-    (1..center_index).to_a + (1...center_index).to_a.reverse
-  end
-
-  def outer_spaces(level)
-    spaces(center_index - level)
-  end
-
-  def inner_spaces(level)
-    spaces((level - 1) * 2 + 1)
-  end
-
-  def spaces(count)
-    ' ' * count
-  end
-
-  def center_index
-    LETTERS.index(center_letter)
-  end
-
-  def letter_at(index)
-    LETTERS[index]
+    def mirror(data)
+      data + data.reverse[1..-1]
+    end
   end
 end

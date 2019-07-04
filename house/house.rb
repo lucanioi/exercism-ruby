@@ -1,7 +1,9 @@
+# frozen_string_literal: true
+
 module House
-  INTRO = 'This is the'.freeze
-  ACTION = 'that %s the'.freeze
-  FIRST_LINE = 'This is the house that Jack built.'.freeze
+  INTRO = 'This is the'
+  ACTION = 'that %s the'
+  FIRST_LINE = 'This is the house that Jack built.'
   CHARACTERS = [
     ['malt', 'lay in'],
     ['rat', 'ate'],
@@ -19,13 +21,15 @@ module House
   module_function
 
   def recite
-    verses.map { |verse| verse.join("\n") }.join("\n\n") + "\n"
+    verses.join("\n\n") + "\n"
   end
 
   def verses
-    CHARACTERS.reduce([[FIRST_LINE]]) do |song, (character, verb)|
+    CHARACTERS.reduce([[FIRST_LINE]]) do |song, (animal, verb)|
       first_line, *rest = song.last
-      song << ["#{INTRO} #{character}", first_line.sub(INTRO, ACTION % verb), *rest]
+      song << ["#{INTRO} #{animal}",
+               first_line.sub(INTRO, ACTION % verb),
+               *rest].join("\n")
     end
   end
 end

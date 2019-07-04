@@ -1,8 +1,11 @@
+# frozen_string_literal: true
+
 module FoodChain
-  FIRST_LINE = 'I know an old lady who swallowed a %s.'.freeze
-  BODY_LINE  = 'She swallowed the %s to catch the %s.'.freeze
-  LAST_LINE  = 'I don\'t know why she swallowed the %s. Perhaps she\'ll die.'.freeze
-  LAST_LINE_FINAL_VERSE = 'She\'s dead, of course!'.freeze
+  FIRST_LINE = 'I know an old lady who swallowed a %s.'
+  BODY_LINE  = 'She swallowed the %s to catch the %s.'
+  LAST_LINE  = 'I don\'t know why she swallowed the %s. ' \
+               'Perhaps she\'ll die.'
+  LAST_LINE_FINAL_VERSE = 'She\'s dead, of course!'
 
   ANIMALS = {
     'fly'    => '',
@@ -22,7 +25,9 @@ module FoodChain
   end
 
   def verse(animal)
-    [first_line(animal), body(animal), last_line(animal)].compact.join("\n")
+    [first_line(animal),
+     body(animal),
+     last_line(animal)].compact.join("\n")
   end
 
   def first_line(animal)
@@ -38,7 +43,8 @@ module FoodChain
   end
 
   def body_line((swallowed, to_catch))
-    BODY_LINE % [swallowed, "#{to_catch}#{description(to_catch)}"]
+    to_catch = "#{to_catch}#{description(to_catch)}"
+    BODY_LINE % [swallowed, to_catch]
   end
 
   def description(animal)
@@ -48,11 +54,17 @@ module FoodChain
   end
 
   def last_line(animal)
-    (animals.last == animal ? LAST_LINE_FINAL_VERSE : LAST_LINE) % animals.first
+    if animals.last == animal
+      LAST_LINE_FINAL_VERSE
+    else
+      LAST_LINE % animals.first
+    end
   end
 
   def animals_until(animal)
-    animals.select { |a| animals.index(a) <= animals.index(animal) }
+    animals.select do |a|
+      animals.index(a) <= animals.index(animal)
+    end
   end
 
   def animals

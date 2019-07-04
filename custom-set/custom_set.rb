@@ -62,8 +62,8 @@ class CustomSet
   end
 
   def hashify(elements)
-    elements.each_with_object(Hash.new(false)) do |element, set|
-      set[element] = true
+    elements.reduce(Hash.new(false)) do |set, element|
+      set.merge(element => true)
     end
   end
 end

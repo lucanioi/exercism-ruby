@@ -54,13 +54,13 @@ class Say
   def hundreds(num)
     combine_with(' ') do
       [say(num / 100), HUNDRED, say(num % 100)]
-     end
+    end
   end
 
   def tens(num)
     combine_with('-') do
       [TENS[num / 10], say(num % 10)]
-     end
+    end
   end
 
   def zero
