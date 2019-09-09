@@ -1,1 +1,1 @@
-My solutions to Ruby exercises in Exercism
+My solutions to Ruby exercises on exercism.io
