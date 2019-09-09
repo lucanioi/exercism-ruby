@@ -17,7 +17,7 @@ class TransposeTest < Minitest::Test
   end
 
   def test_two_characters_in_a_row
-    # skip
+    skip
     input = <<~INPUT.strip
       A1
     INPUT
@@ -31,7 +31,7 @@ class TransposeTest < Minitest::Test
   end
 
   def test_two_characters_in_a_column
-    # skip
+    skip
     input = <<~INPUT.strip
       A
       1
@@ -45,7 +45,7 @@ class TransposeTest < Minitest::Test
   end
 
   def test_simple
-    # skip
+    skip
     input = <<~INPUT.strip
       ABC
       123
@@ -61,7 +61,7 @@ class TransposeTest < Minitest::Test
   end
 
   def test_single_line
-    # skip
+    skip
     input = <<~INPUT.strip
       Single line.
     INPUT
@@ -73,7 +73,7 @@ class TransposeTest < Minitest::Test
       g
       l
       e
-
+       
       l
       i
       n
@@ -85,7 +85,7 @@ class TransposeTest < Minitest::Test
   end
 
   def test_first_line_longer_than_second_line
-    # skip
+    skip
     input = <<~INPUT.strip
       The fourth line.
       The fifth line.
@@ -95,13 +95,13 @@ class TransposeTest < Minitest::Test
       TT
       hh
       ee
-
+        
       ff
       oi
       uf
       rt
       th
-      h
+      h 
        l
       li
       in
@@ -109,12 +109,12 @@ class TransposeTest < Minitest::Test
       e.
       .
     EXPECTED
-    # byebug
+
     assert_equal expected, Transpose.transpose(input)
   end
 
   def test_second_line_longer_than_first_line
-    # skip
+    skip
     input = <<~INPUT.strip
       The first line.
       The second line.
@@ -124,14 +124,14 @@ class TransposeTest < Minitest::Test
       TT
       hh
       ee
-
+        
       fs
       ie
       rc
       so
       tn
        d
-      l
+      l 
       il
       ni
       en
@@ -143,7 +143,7 @@ class TransposeTest < Minitest::Test
   end
 
   def test_mixed_line_length
-    # skip
+    skip
     input = <<~INPUT.strip
       The longest line.
       A long line.
@@ -153,14 +153,14 @@ class TransposeTest < Minitest::Test
 
     expected = <<~EXPECTED.strip
       TAAA
-      h
+      h   
       elll
        ooi
       lnnn
       ogge
       n e.
       glr
-      ei
+      ei 
       snl
       tei
        .n
@@ -175,7 +175,7 @@ class TransposeTest < Minitest::Test
   end
 
   def test_square
-    # skip
+    skip
     input = <<~INPUT.strip
       HEART
       EMBER
@@ -196,7 +196,7 @@ class TransposeTest < Minitest::Test
   end
 
   def test_rectangle
-    # skip
+    skip
     input = <<~INPUT.strip
       FRACTURE
       OUTLINED
@@ -219,7 +219,7 @@ class TransposeTest < Minitest::Test
   end
 
   def test_triangle
-    # skip
+    skip
     input = <<~INPUT.strip
       T
       EE

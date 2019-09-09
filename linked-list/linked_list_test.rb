@@ -11,7 +11,7 @@ class DequeTest < Minitest::Test
   end
 
   def test_push_shift
-    # skip
+    skip
     deque = Deque.new
     deque.push(10)
     deque.push(20)
@@ -20,7 +20,7 @@ class DequeTest < Minitest::Test
   end
 
   def test_unshift_shift
-    # skip
+    skip
     deque = Deque.new
     deque.unshift(10)
     deque.unshift(20)
@@ -29,7 +29,7 @@ class DequeTest < Minitest::Test
   end
 
   def test_unshift_pop
-    # skip
+    skip
     deque = Deque.new
     deque.unshift(10)
     deque.unshift(20)
@@ -38,7 +38,7 @@ class DequeTest < Minitest::Test
   end
 
   def test_example
-    # skip
+    skip
     deque = Deque.new
     deque.push(10)
     deque.push(20)

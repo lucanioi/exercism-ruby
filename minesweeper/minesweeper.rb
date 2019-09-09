@@ -21,7 +21,7 @@ class Board
   end
 
   def transform
-    board.dup.tap { |rows| transform_rows(rows) }
+    board.dup.tap(&method(:transform_rows))
   end
 
   private
@@ -29,7 +29,9 @@ class Board
   attr_reader :board
 
   def validate_board!
-    raise ArgumentError unless valid_form? && valid_composition?
+    unless valid_form? && valid_composition?
+      raise ArgumentError
+    end
   end
 
   def valid_form?
@@ -37,7 +39,8 @@ class Board
   end
 
   def valid_composition?
-    !!(board.join("\n") =~ /#{BORDER_ROW}\n(?:#{ROW}\n)*#{BORDER_ROW}/)
+    matcher = /#{BORDER_ROW}\n(?:#{ROW}\n)*#{BORDER_ROW}/
+    !!(board.join("\n").match?(matcher))
   end
 
   def transform_rows(rows)
@@ -53,14 +56,13 @@ class Board
       next unless cell == EMPTY
 
       mines_count = count_adjacent_mines(row_i, col_i)
-      board[row_i][col_i] = mines_count > 0 ? mines_count.to_s : EMPTY
+      board[row_i][col_i] =
+        mines_count > 0 ? mines_count.to_s : EMPTY
     end
   end
 
   def count_adjacent_mines(row_i, col_i)
-    surrounding_cells(row_i, col_i).count do |cell|
-      cell == MINE
-    end
+    surrounding_cells(row_i, col_i).count(MINE)
   end
 
   def surrounding_cells(row_i, col_i)

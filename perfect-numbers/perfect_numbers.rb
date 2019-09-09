@@ -9,15 +9,14 @@ module PerfectNumber
 
   module_function
 
-  def classify(number)
-    raise RuntimeError if number <= 0
-    CLASSIFICATIONS.fetch(aliquot_sum(number) <=> number)
+  def classify(n)
+    raise RuntimeError if n <= 0
+    CLASSIFICATIONS.fetch(aliquot_sum(n) <=> n)
   end
 
-  def aliquot_sum(number)
-    (2..Math.sqrt(number).round).reduce(1) do |sum, factor|
-      (number % factor).zero? ? sum + factor + number / factor : sum
-    end
+  def aliquot_sum(n)
+    (2..Math.sqrt(n).round)
+      .filter { |factor| (n % factor).zero? }
+      .reduce(1) { |sum, factor| sum + factor + n / factor }
   end
 end
-

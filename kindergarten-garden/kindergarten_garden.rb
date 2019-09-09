@@ -30,10 +30,12 @@ class Garden
   end
 
   def students_and_plants
-    plants = garden.split.map do |garden_row|
-      garden_row.chars.each_slice(2).to_a
-    end.transpose.map(&:flatten)
+    students.zip(plants)
+  end
 
-    students.zip(plants).to_h
+  def plants
+    garden.split
+      .map { |row| row.chars.each_slice(2).to_a }
+      .transpose.map(&:flatten)
   end
 end

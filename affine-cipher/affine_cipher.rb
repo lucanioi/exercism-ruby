@@ -43,16 +43,16 @@ class Affine
     string.scan(/(?:.{#{size}})|(?:.+)/).join("\s")
   end
 
-  def coprime?(key_a, m_value)
-    (2..[key_a, m_value].min).none? do |factor|
-      [key_a, m_value].all? { |num| num.modulo(factor).zero? }
+  def coprime?(*nums)
+    (2..nums.min).none? do |factor|
+      nums.all? { |num| (num % factor).zero? }
     end
   end
 
   def crypt_char(char, cryption_func)
     return char unless ALPHABET.include?(char)
-    enc_index = cryption_func.call(index_of(char), key_a, key_b, M_VALUE)
-    ALPHABET[enc_index]
+    cryption_func.call(index_of(char), key_a, key_b, M_VALUE)
+      .then { |enc_index| ALPHABET[enc_index] }
   end
 
   def index_of(char)

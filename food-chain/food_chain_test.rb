@@ -26,16 +26,6 @@ class FoodChainTest < Minitest::Test
     assert_equal expected, FoodChain.song
   end
 
-  def test_animals_until_fly
-    expected = ['fly']
-    assert_equal expected, FoodChain.animals_until('fly')
-  end
-
-  def test_animals_until_horse
-    expected = %w[fly spider bird cat dog goat cow horse]
-    assert_equal expected, FoodChain.animals_until('horse')
-  end
-
   # Tests that an error is effectively raised when IO.read or
   # File.open are used within FoodChain.
   def test_read_guard

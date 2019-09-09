@@ -37,3 +37,7 @@ class Series
     raise ArgumentError unless span <= num_string.size
   end
 end
+
+module BookKeeping
+  VERSION = 3
+end

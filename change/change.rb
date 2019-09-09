@@ -31,17 +31,18 @@ class Change
   end
 
   def all_optimal_change(coin)
-    (coin..total).each(&method(:map_optimal_change).curry[coin])
+    (coin..total).each(&method(:update_optimal).curry[coin])
   end
 
-  def map_optimal_change(coin, subtotal)
+  def update_optimal(coin, subtotal)
     return unless partial_change = table[subtotal - coin]
     change = partial_change + [coin]
     table[subtotal] = change if optimal_change?(change)
   end
 
   def optimal_change?(change)
-    !((current = table[change.sum]) && current.size < change.size)
+    current = table[change.sum]
+    !(current && current.size < change.size)
   end
 
   def table
